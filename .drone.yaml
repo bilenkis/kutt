@@ -1,0 +1,32 @@
+---
+kind: pipeline
+type: kubernetes
+name: helm
+
+service_account_name: "drone-kutt"
+
+trigger:
+  event:
+    - pull_request
+  paths:
+    include:
+      - kubernetes/**
+
+steps:
+  - name: check
+    image: chatwork/helmfile:latest
+    commands:
+      - helmfile --verison ${BLA_BLA} diff ${DRONE_BUILD}
+    env:
+      BLA_BLA: test
+    trigger:
+      even:
+        - tag
+        - **/tags/bla-bla*
+
+  - name: sync
+    image: chatwork/helmfile:latest
+    commands:
+      - helmfile sync
+    depends_on:
+      - check

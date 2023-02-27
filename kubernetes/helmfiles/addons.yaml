@@ -1,0 +1,56 @@
+repositories:
+- name: eks
+  url: https://aws.github.io/eks-charts
+- name: metrics-server
+  url: https://kubernetes-sigs.github.io/metrics-server
+- name: ingress-nginx
+  url: https://kubernetes.github.io/ingress-nginx
+# - name: autoscaler
+#   url: https://kubernetes.github.io/autoscaler
+
+environments:
+  default:
+    values:
+      - envs:
+        - name: staging
+          kubeContext: company
+          region: eu01
+        # - name: production
+        #   kubeContext: company-production
+        #   region: us01
+
+releases:
+{{- range .Values.envs }}
+  - name: {{ .name }}-metrics-server
+    chart: metrics-server/metrics-server
+    kubeContext: {{ .kubeContext }}
+    namespace: kube-system
+    version: 3.8.2
+    labels:
+      app: metrics-server
+      cluster: {{ .kubeContext }}
+      env: {{ .name }}
+
+  - name: {{ .name }}-nginx
+    namespace: ingress
+    chart: ingress-nginx/ingress-nginx
+    version: 4.2.5
+    labels:
+      app: nginx
+      cluster: {{ .kubeContext }}
+      env: {{ .name }}
+    values:
+      - ../chart-values/nginx-ingress/{{ .name }}/values.yaml
+
+  # - name: cluster-autoscaler
+  #   chart: autoscaler/cluster-autoscaler
+  #   kubeContext: {{ .kubeContext }}
+  #   namespace: kube-system
+  #   version: 9.24.0
+  #   labels:
+  #     app: cluster-autoscaler
+  #     cluster: {{ .kubeContext }}
+  #     env: {{ .name }}
+  #   values:
+  #     - ../chart-values/cluster-autoscaler/{{ .name }}/values.yaml
+{{- end }}

@@ -1,0 +1,33 @@
+helmfiles:
+  - ../addons.yaml
+
+repositories:
+  - name: christianknell
+    url: https://christianknell.github.io/helm-charts
+
+environments:
+  default:
+    values:
+      - envs:
+        - name: staging
+          kubeContext: company
+          region: eu01
+        # - name: production
+        #   kubeContext: company-production
+        #   region: us01
+
+releases:
+{{- range .Values.envs }}
+  - name: {{ .name }}-kutt
+    chart: christianknell/kutt
+    namespace: default
+    kubeContext: {{ .kubeContext }}
+    labels:
+      app: kutt
+      env: {{ .name }}
+      cluster: {{ .kubeContext }}
+    values:
+      - ../../chart-values/kutt/{{ .name }}/values.yaml
+    secrets:
+      - ../../chart-values/kutt/{{ .name }}/secrets.yaml
+{{- end }}

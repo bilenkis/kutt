@@ -1,0 +1,40 @@
+version: 3
+automerge: true
+
+workflows:
+  terragrunt:
+    plan:
+      steps:
+      - env:
+          name: TERRAGRUNT_TFPATH
+          command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
+      - env:
+          name: TF_CLI_ARGS
+          value: -no-color
+      - run: terragrunt plan -out $PLANFILE
+    apply:
+      steps:
+      - env:
+          name: TERRAGRUNT_TFPATH
+          command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
+      - env:
+          name: TF_CLI_ARGS
+          value: -no-color
+      - run: terragrunt apply $PLANFILE
+
+projects:
+- dir: terragrunt/bilenkis-staging/eu01/staging/kutt
+  workflow: terragrunt
+  terraform_version: v1.3.9
+  autoplan:
+    when_modified:
+      - ../../../../../terraform/apps/teams/infra/kutt/*.tf
+      - ../../../../../terraform/apps/teams/infra/kutt/tfvars/*.tfvars
+
+- dir: terragrunt/bilenkis-staging/eu01/production/kutt
+  workflow: terragrunt
+  terraform_version: v1.3.9
+  autoplan:
+    when_modified:
+      - ../../../../../terraform/apps/teams/infra/kutt/*.tf
+      - ../../../../../terraform/apps/teams/infra/kutt/tfvars/*.tfvars
