@@ -2,7 +2,7 @@ vpc_name        = "infra01"
 cluster_name    = "infra01"
 cluster_version = "1.22"
 vpc_cidr        = "10.40.0.0/16"
-my_ip           = "89.247.166.216/32"
+my_ip           = "<curl ifconfig.co>/32"
 
 ssh_users = [
   {

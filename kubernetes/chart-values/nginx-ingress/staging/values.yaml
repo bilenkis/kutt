@@ -7,7 +7,7 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     externalTrafficPolicy: Local
     loadBalancerSourceRanges:
-      - 89.247.166.184/32
+      - <curl ifconfig.co>/32
   metrics:
     enabled: true
   podLabels:
